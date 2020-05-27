@@ -9,16 +9,10 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from forms import LoginForm, RegisterForm, EditProfileForm
 from datetime import datetime
 import json
-
-TYPE_FOODBANK = 0
-TYPE_DONOR = 1
-TYPE_CONSUMER = 2
-
-REQUEST_DONATION = 1
-REQUEST_CONSUMPTION = 2
-
-REQUEST_PENDING = 0
-REQUEST_APPROVED = 1
+import azure.cosmos.cosmos_client as cosmos_client
+import azure.cosmos.errors as errors
+import azure.cosmos.documents as documents
+import azure.cosmos.http_constants as http_constants
 
 # App instance
 app = Flask(__name__) # __name__ == "__main__" when executing the script
@@ -60,6 +54,40 @@ def not_found(error):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# client = MongoClient("cattlecare-db.mongo.cosmos.azure.com:10255") #host uri
+# db = client.test
+# db.authenticate(name="cattlecare-db", password='UP62PDTb78l7nNgfEOHqAwEvCOLff3lTrkmUJWQIoLyJjan2IprAY0kos4yZCriJGzFV5a6IWtIkfoauW35Idw==')
+# collection = db.test_collection
+
+endpoint = 'https://cattlecare-database.documents.azure.com:443/'
+key = 'KRLlbNOhbBZgKvonG3wzBvjDsWEOBgZ1rwK1hE655v0ihue0fRo3ZLXR9hCy2jSAykZPRfgWB9vR7D3AcmU0ew=='
+client = cosmos_client.CosmosClient(endpoint, key)
+
+database_name = 'db_predictions'
+container_name = 'con_predictions'
+
+database = client.get_database_client(database_name)
+container = database.get_container_client(container_name)
+aid = "'102'"
+# query = "SELECT c.Prediction FROM con_predictions c where c.AnimalID = " + aid
+query = "SELECT * from c"
+print(query)
+database_link = 'dbs/' + database_name
+collection_link = database_link + '/colls/' + container_name
+data_dict = {"id": "3", "AnimalID": "102", "Prediction": "N"}
+data_dict = json.dumps(data_dict)
+# family_items_to_create = ['1', 'A']
+
+# for family_item in family_items_to_create:
+#     container.create_item(body=family_item)
+# insert_data = client.UpsertItem(collection_link,json.loads(data_dict)
+#insert_data = container.upsert_item(json.loads(data_dict))
+
+items = list(container.query_items(query=query, enable_cross_partition_query=True))
+print(items)
+request_charge = container.client_connection.last_response_headers['x-ms-request-charge']
+
+print('Query returned {0} items. Operation consumed {1} request units'.format(len(items), request_charge))
 
 # ------------------- Routes, acting as Controllers -----------------------
 @app.route('/')
@@ -77,6 +105,25 @@ def joinus():
 @app.route('/catalog')
 def catalog():
     return render_template('catalog.html')
+
+@app.route("/simulate", methods=['GET', 'POST'])
+def simulate():
+    print("In")
+    return redirect(url_for('dashboard'))
+
+@app.route("/prediction/<string:id>", methods=['GET', 'POST'])
+def predict(id):
+    print("id", id)
+    id = "'" + id + "'"
+    query = "SELECT c.Prediction FROM con_predictions c where c.AnimalID = " + id
+    items = list(container.query_items(query=query, enable_cross_partition_query=True))
+    if len(items) == 0:
+        result = "Invalid Cow Id"
+    else:
+        result = items[0]['Prediction']
+        print(result)
+    #return redirect(url_for('dashboard'), result)
+    return render_template('dashboard_consumer.html', result=result)
     
 @app.route('/login', methods=['GET', 'POST'])
 def login():

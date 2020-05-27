@@ -36,7 +36,7 @@
 	      <div class="collapse navbar-collapse" id="ftco-nav">
 	        <ul class="navbar-nav ml-auto">
 	          <li class="nav-item cta cta-colored"><a  href="{{ url_for('dashboard') }}" class="nav-link">Home</a></li>
-              <li class="nav-item active"><a  href="{{ url_for('edit_profile') }}" class="nav-link"><span class="icon-user"></span> Edit Profile</a></li>
+              <li class="nav-item active"><a  href="{{ url_for('edit_profile') }}" class="nav-link">Edit Profile</a></li>
               <li class="nav-item active"><a  href="{{ url_for('logout') }}" class="nav-link">Logout</a></li>
 	        </ul>
 	      </div>
@@ -44,42 +44,49 @@
 	  </nav>
     <!-- END nav -->
 
-    <section id="home-section" class="hero">
-		  <div class="home-slider owl-carousel">
-	      <div class="slider-item" style="background-image: url('../static/images/bg_1.jpg');">
-	      	<div class="overlay"></div>
-	        <div class="container">
-	          <div class="row slider-text justify-content-center align-items-center" data-scrollax-parent="true">
+    <div class="hero-wrap hero-bread" style="background-image: url('../static/images/simulate.jpg');">
+		<div class="container">
+		  <div class="row no-gutters slider-text align-items-center justify-content-center">
+			<div class="col-md-9 ftco-animate text-center">
+			  <h1 class="mb-0 bread">Dashboard</h1>
+			</div>
+		  </div>
+		</div>
+	  </div>
 
-	            <div class="col-md-12 ftco-animate text-center">
-	              <h1 class="mb-2">We serve Fresh Vegestables &amp; Fruits</h1>
-	            </div>
-
-	          </div>
-	        </div>
-	      </div>
-
-	      <div class="slider-item" style="background-image: url('../static/images/bg_2.jpg');">
-	      	<div class="overlay"></div>
-	        <div class="container">
-	          <div class="row slider-text justify-content-center align-items-center" data-scrollax-parent="true">
-
-	            <div class="col-sm-12 ftco-animate text-center">
-	              <h1 class="mb-2">100% Fresh Foods</h1>
-	            </div>
-
-	          </div>
-	        </div>
-	      </div>
-	    </div>
-    </section>
+	<div class="container">
+		<div class="row" style="padding-top: 60px;">
+			<div class="col-md-6">
+				<div class="col-md-12">
+					<p>Click the following button to simulate the process of predicting the health of cows</p>
+					<p><a href='#' onclick="simulate()" id='simulate' class="btn btn-black py-3 px-5">Simulate</a></p>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="row">
+					<div class="col-md-6">
+						<label>Enter the cow ID:</label>
+						<input type="text" id="animal_id" name="animal_id" class="form-control input-number">
+					</div>
+					<div class="col-md-6">
+						<p style="margin-top: 30px;"><a href='#' onclick="getPrediction()" id='prediction' class="btn btn-black py-3 px-5">Get Prediction</a></p>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+					<p>Prediction : {{result}}</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+	</form>
+	</section>
 
     <section class="ftco-section">
 		<div class="container">
 			<div class="row no-gutters ftco-services">
-				<div class="col-md-3 text-center d-flex align-self-stretch ftco-animate">
-		
-				</div>
 				<div class="col-md-3 text-center d-flex align-self-stretch ftco-animate">
 					<div class="media block-6 services mb-md-0 mb-4">
 						<div class="icon bg-color-2 d-flex justify-content-center align-items-center mb-2">
@@ -90,6 +97,9 @@
 							<span>Product well package</span>
 						</div>
 					</div>    
+				</div>
+				<div class="col-md-3 text-center d-flex align-self-stretch ftco-animate">
+		
 				</div>
 				<div class="col-md-3 text-center d-flex align-self-stretch ftco-animate">
 					<div class="media block-6 services mb-md-0 mb-4">
@@ -156,7 +166,21 @@
   <script type="text/javascript" src="{{url_for('.static', filename='js/scrollax.min.js')}}"></script>
   <script type="text/javascript" src="{{url_for('.static', filename='js/main.js')}}"></script>
   
+<script>
+function simulate() {
+	console.log("Called")
+	document.location.href ='{{url_for("index")}}simulate'
+	console.log("Done")
+}
+function getPrediction() {
+	console.log("Called")
+	var val = $('#animal_id').val()
+	console.log(val)
+	document.location.href ='{{url_for("index")}}prediction/' + val;
+	console.log("Done")
+}
 
+</script>
     
   </body>
   </html>
