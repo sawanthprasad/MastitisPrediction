@@ -5,3 +5,4 @@ flask_login
 flast_wtf
 wtforms_components
 azure-cosmos
+email_validator
